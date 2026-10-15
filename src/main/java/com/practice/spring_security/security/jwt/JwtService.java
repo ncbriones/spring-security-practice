@@ -1,5 +1,6 @@
 package com.practice.spring_security.security.jwt;
 
+import com.practice.spring_security.security.user.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -55,11 +56,13 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+    public String generateToken(CustomUserDetails userDetails) {
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("role", userDetails.getRole().name());
+        return buildToken(extraClaims, userDetails);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+    public String buildToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder()
                 .claims(extraClaims)
                 .subject(userDetails.getUsername())
